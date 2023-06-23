@@ -1,11 +1,10 @@
-nltk.download('punkt')
+import pandas as pd
 from nltk import word_tokenize
-from nltk.stem.snowball import SnowballStemmer
-import requests
-from io import StringIO
+from LeXmo.loader import fetch_data
 
+stemmer, emolex_words, emotions = fetch_data()
 
-def LeXmo(text):
+def run(text):
 
     '''
       Takes text and adds if to a dictionary with 10 Keys  for each of the 10 emotions in the NRC Emotion Lexicon,
@@ -15,27 +14,9 @@ def LeXmo(text):
 
 
       '''
-
-    response = requests.get('https://raw.github.com/dinbav/LeXmo/master/NRC-Emotion-Lexicon-Wordlevel-v0.92.txt')
-    nrc = StringIO(response.text)
-
-
-
+   
     LeXmo_dict = {'text': text, 'anger': [], 'anticipation': [], 'disgust': [], 'fear': [], 'joy': [], 'negative': [],
                   'positive': [], 'sadness': [], 'surprise': [], 'trust': []}
-
-    emolex_df = pd.read_csv(nrc,
-                            names=["word", "emotion", "association"],
-                            sep=r'\t', engine='python')
-
-    emolex_words = emolex_df.pivot(index='word',
-                                   columns='emotion',
-                                   values='association').reset_index()
-    emolex_words.drop(emolex_words.index[0])
-
-    emotions = emolex_words.columns.drop('word')
-
-    stemmer = SnowballStemmer("english")
 
     document = word_tokenize(text)
 
